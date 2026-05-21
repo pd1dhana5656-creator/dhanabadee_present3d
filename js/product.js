@@ -154,38 +154,44 @@ function renderGallery(row) {
   }
 }
 
-// ─── Swatches ─────────────────────────────────────────────────────────────────
+// ─── Finishing & Swatches ──────────────────────────────────────────────────────
 
 function renderSwatches(currentRow, variants) {
-  const swatchList   = document.getElementById("js-swatchList");
-  const countEl      = document.getElementById("js-finishingCount");
-  const otherSection = document.getElementById("js-finishingOther");
-  const otherValueEl = otherSection.querySelector(".finishing-other__value");
+  // 1) แสดงชื่อ finishing ของสินค้าตัวนี้ (ข้อความเท่านั้น ไม่คลิก)
+  const finishingNameEl = document.getElementById("js-finishingName");
+  finishingNameEl.textContent = currentRow["finishing"] || "—";
 
+  // 2) swatch สินค้าสีอื่น (เฉพาะ variant ที่ไม่ใช่ตัวปัจจุบัน)
+  const variantsSection = document.getElementById("js-variantsSection");
+  const swatchList      = document.getElementById("js-swatchList");
+  const countEl         = document.getElementById("js-finishingCount");
+
+  // กรองเอาเฉพาะ variant อื่น ไม่รวมตัวปัจจุบัน
+  const others = variants.filter(
+    (v) => (v["รหัสสินค้า"] || "").trim() !== (currentRow["รหัสสินค้า"] || "").trim()
+  );
+
+  if (others.length === 0) {
+    // ไม่มีสีอื่น → ซ่อน section ทั้งหมด
+    variantsSection.classList.add("hidden");
+    return;
+  }
+
+  // มีสีอื่น → แสดง section และ render swatch
+  variantsSection.classList.remove("hidden");
   swatchList.innerHTML = "";
 
-  variants.forEach((v) => {
-    const isCurrent = v["รหัสสินค้า"] === currentRow["รหัสสินค้า"];
-
-    // URL ของหน้าสินค้านั้น
+  others.forEach((v) => {
     const href = `product.html?group=${encodeURIComponent(group)}&code=${encodeURIComponent(v["รหัสสินค้า"])}`;
 
     const a = document.createElement("a");
-    a.className = "swatch" + (isCurrent ? " swatch--active" : "");
-    a.title = `${v["ชื่อสินค้า"]} — ${v["finishing"] || v["รหัสสินค้า"]}`;
+    a.className = "swatch";
+    a.href  = href;
+    a.title = v["ชื่อสินค้า"] || v["รหัสสินค้า"];
 
-    // ถ้าเป็น swatch ตัวปัจจุบัน → ไม่ต้องให้คลิกออกไปหน้าอื่น
-    if (isCurrent) {
-      a.setAttribute("aria-current", "true");
-      a.setAttribute("href", "#");
-      a.addEventListener("click", (e) => e.preventDefault());
-    } else {
-      a.href = href;
-    }
-
-    // รูป swatch = รูปภาพแรกของสินค้า variant นั้น
-    const swatchImg = v["รูปภาพ"]?.split(",")[0]?.trim() || "";
-    // ใช้ finishing → ชื่อสินค้า → รหัสสินค้า ตามลำดับ
+    // รูป swatch = รูปแรกของสินค้านั้น
+    const swatchImg = (v["รูปภาพ"] || "").split(",")[0].trim();
+    // label = finishing → ชื่อสินค้า → รหัสสินค้า
     const finLabel  = v["finishing"] || v["ชื่อสินค้า"] || v["รหัสสินค้า"];
 
     a.innerHTML = swatchImg
@@ -195,17 +201,7 @@ function renderSwatches(currentRow, variants) {
     swatchList.appendChild(a);
   });
 
-  // จำนวน variants ทั้งหมด
-  countEl.textContent = variants.length > 1 ? `${variants.length} options` : "";
-
-  // finishing อื่นๆ (ช่องหมายเหตุ)
-  const other = (currentRow["finishing อื่นๆ"] || "").trim();
-  if (other) {
-    otherValueEl.textContent = other;
-    otherSection.classList.remove("hidden");
-  } else {
-    otherSection.classList.add("hidden");
-  }
+  countEl.textContent = `${others.length + 1} options`;
 }
 
 // ─── helper ───────────────────────────────────────────────────────────────────
