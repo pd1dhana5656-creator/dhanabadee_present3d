@@ -131,8 +131,6 @@ function makeTableRow(group, p) {
     <td class="col-type">${p["ประเภทสินค้า"]}</td>
     <td class="col-dim">${p["ขนาดสินค้า (cm.)"]}</td>
     <td class="col-finish">${p["finishing"]}</td>
-    <td class="col-finish-other">${p["finishing อื่นๆ"] || "—"}</td>
-    <td class="col-3d">${has3D ? '<span class="badge-3d">360°</span>' : "—"}</td>
   `;
   return tr;
 }
