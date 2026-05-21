@@ -185,11 +185,12 @@ function renderSwatches(currentRow, variants) {
 
     // รูป swatch = รูปภาพแรกของสินค้า variant นั้น
     const swatchImg = v["รูปภาพ"]?.split(",")[0]?.trim() || "";
-    const finLabel  = v["finishing"] || v["รหัสสินค้า"];
+    // ใช้ finishing → ชื่อสินค้า → รหัสสินค้า ตามลำดับ
+    const finLabel  = v["finishing"] || v["ชื่อสินค้า"] || v["รหัสสินค้า"];
 
     a.innerHTML = swatchImg
       ? `<img src="${swatchImg}" alt="${finLabel}" /><span class="swatch__code">${finLabel}</span>`
-      : `<span class="swatch__code">${finLabel}</span>`;
+      : `<div class="swatch__no-img"></div><span class="swatch__code">${finLabel}</span>`;
 
     swatchList.appendChild(a);
   });
