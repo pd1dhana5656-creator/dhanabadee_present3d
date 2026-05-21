@@ -568,6 +568,7 @@ ul, ol {
 
 .size-table {
   width: 100%;
+  text-align: center;
   border-collapse: collapse;
   font-size: 0.82rem;
 }
