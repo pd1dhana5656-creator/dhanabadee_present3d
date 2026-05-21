@@ -112,11 +112,15 @@ export function getVariantCodes(product) {
 export function getAllVariants(products, current) {
   const otherCodes = getVariantCodes(current);
 
-  // รวม current + variants ที่ระบุ (กรองออกถ้าซ้ำ)
+  const currentCode = (current["รหัสสินค้า"] || "").trim();
   const all = [current];
+
   otherCodes.forEach((c) => {
-    const found = findByCode(products, c);
-    if (found && found["รหัสสินค้า"] !== current["รหัสสินค้า"]) {
+    // trim + case-insensitive เพื่อรองรับการพิมพ์ที่ไม่สม่ำเสมอใน Sheets
+    const found = products.find(
+      (p) => (p["รหัสสินค้า"] || "").trim().toLowerCase() === c.toLowerCase()
+    );
+    if (found && (found["รหัสสินค้า"] || "").trim() !== currentCode) {
       all.push(found);
     }
   });
