@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-home">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header">
+    <!-- โลโก้แบรนด์ -->
+    <div class="logo">
+      <span class="logo-text"><img src="https://i.ibb.co/KjMbTxgX/Logo-Dhana.jpg" alt="Logo Dhana" border="0"></span>
+    </div>
+  </header>
+  <!-- /HEADER -->
+
+  <!-- ==================== HERO / INTRO ==================== -->
+  <!-- พื้นที่แนะนำแบรนด์หรือ banner ถ้าต้องการ -->
+  <section class="home-hero">
+    <h1 class="home-hero__title">[ชื่อแบรนด์ หรือ Tagline]</h1>
+    <p class="home-hero__sub">เลือกกลุ่มสินค้าที่ต้องการ</p>
+  </section>
+  <!-- /HERO -->
+
+  <!-- ==================== MAIN : กลุ่มสินค้าหลัก ==================== -->
+  <!--
+    มี 2 กลุ่ม: Dhana / DM
+    ใช้หน้าต่างการ์ดใหญ่ เพราะมีแค่ 2 ตัว
+    href ชี้ไปหน้า category.html พร้อม query ?group=
+  -->
+  <main class="home-main">
+    <div class="group-grid">
+
+      <!-- ── การ์ดกลุ่ม Dhana ── -->
+      <a class="group-card" href="category.html?group=dhana">
+        <div class="group-card__image-area">
+          <!--
+            ใส่รูป cover ของกลุ่ม Dhana
+            เช่น <img src="assets/cover-dhana.jpg" alt="Dhana" />
+          -->
+          <div class="group-card__placeholder-img">[รูป cover กลุ่ม Dhana]</div>
+        </div>
+        <div class="group-card__footer">
+          <h2 class="group-card__name">Dhana</h2>
+          <span class="group-card__cta">ดูสินค้า →</span>
+        </div>
+      </a>
+
+      <!-- ── การ์ดกลุ่ม DM ── -->
+      <a class="group-card" href="category.html?group=dm">
+        <div class="group-card__image-area">
+          <div class="group-card__placeholder-img">[รูป cover กลุ่ม DM]</div>
+        </div>
+        <div class="group-card__footer">
+          <h2 class="group-card__name">DM</h2>
+          <span class="group-card__cta">ดูสินค้า →</span>
+        </div>
+      </a>
+
+    </div>
+  </main>
+  <!-- /MAIN -->
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <p class="site-footer__copy">&copy; 2025 [Brand Name]. All rights reserved.</p>
+  </footer>
+  <!-- /FOOTER -->
+
+</body>
+</html>

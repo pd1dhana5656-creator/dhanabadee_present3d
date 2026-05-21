@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    <title> จะถูก JS อัพเดตเป็น "[ชื่อสินค้า] — [รหัสสินค้า]"
+    หลังโหลดข้อมูลเสร็จ
+  -->
+  <title>Product — Product Catalog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-product">
+
+  <!-- ==================== HEADER (Logo เท่านั้น) ==================== -->
+  <!--
+    หมายเหตุ: ตั้งใจไม่มีปุ่ม Back / Home / Breadcrumb
+    เพราะหน้านี้ถูกส่งเป็นลิงค์โดยตรงให้ลูกค้า
+    ลูกค้าดูได้เฉพาะหน้านี้และกดเปลี่ยนสีภายในหน้านี้เท่านั้น
+  -->
+  <header class="site-header site-header--minimal">
+    <div class="logo">
+      <img src="assets/logo.png" alt="Brand Logo" />
+      <span class="logo-text">[BRAND NAME]</span>
+    </div>
+  </header>
+  <!-- /HEADER -->
+
+  <!-- ==================== MAIN : Product Detail ==================== -->
+  <!--
+    JS (product.js) จะ:
+    1. อ่าน ?group= และ ?code= จาก URL
+    2. โหลด CSV ของ sheet ที่ตรงกัน
+    3. กรองแถวที่มี "รหัสสินค้า" ตรงกับ ?code=
+       → อาจได้หลาย row ถ้ามีหลาย finishing (สี/ลาย)
+    4. render ข้อมูลทั้งหมดในหน้านี้
+    5. สร้าง swatch link ไปหน้าสินค้าสีอื่น
+       (product.html?group=[group]&code=[รหัส]&finishing=[finishing])
+  -->
+  <main class="product-detail">
+
+    <!-- ── ซ้าย: Image Gallery ── -->
+    <section class="gallery">
+
+      <!-- Thumbnail strip แนวตั้งด้านซ้าย -->
+      <!--
+        JS render thumb ตามจำนวนรูปที่มี
+        คอลัมน์ "รูปภาพ" อาจมีหลาย URL คั่นด้วย comma
+        + ถ้าคอลัมน์ "โมเดล 3D" มีข้อมูล → เพิ่ม thumb 360°
+      -->
+      <div class="gallery__thumbs" id="js-thumbStrip">
+
+        <!-- [MOCK] thumb รูปภาพปกติ -->
+        <button class="thumb thumb--active" data-index="0" data-type="image">
+          <img src="[URL รูปภาพ 1]" alt="มุมมอง 1" />
+        </button>
+
+        <button class="thumb" data-index="1" data-type="image">
+          <img src="[URL รูปภาพ 2]" alt="มุมมอง 2" />
+        </button>
+
+        <button class="thumb" data-index="2" data-type="image">
+          <img src="[URL รูปภาพ 3]" alt="มุมมอง 3" />
+        </button>
+
+        <!-- [MOCK] thumb โมเดล 3D (แสดงเฉพาะถ้าคอลัมน์ "โมเดล 3D" มีข้อมูล) -->
+        <button class="thumb thumb--3d" data-index="3" data-type="3d">
+          <span class="thumb__label">360°</span>
+        </button>
+
+      </div>
+      <!-- /Thumbnails -->
+
+      <!-- พื้นที่แสดงรูปหลัก / โมเดล 3D -->
+      <div class="gallery__main" id="js-galleryMain">
+
+        <!-- รูปภาพหลัก (default แสดง) -->
+        <div class="gallery__image-wrap" id="js-mainImageWrap">
+          <img
+            class="gallery__main-image"
+            id="js-mainImage"
+            src="[URL รูปภาพหลัก]"
+            alt="[ชื่อสินค้า]"
+          />
+        </div>
+
+        <!-- โมเดล 3D (ซ่อน default แสดงเมื่อกด thumb 360°) -->
+        <!--
+          รองรับ 2 วิธี (JS เลือกตามรูปแบบ URL ใน Sheets):
+          A) .glb/.gltf → ใช้ <model-viewer>
+          B) Sketchfab embed URL → ใช้ <iframe>
+        -->
+        <div class="gallery__model-wrap hidden" id="js-modelWrap">
+
+          <!-- A: model-viewer สำหรับไฟล์ .glb -->
+          <model-viewer
+            id="js-modelViewer"
+            src=""
+            alt="[ชื่อสินค้า] 3D model"
+            auto-rotate
+            camera-controls
+            style="width:100%; height:100%;"
+          ></model-viewer>
+
+          <!-- B: iframe สำหรับ Sketchfab (JS จะสลับใช้อันใดอันหนึ่ง) -->
+          <!--
+          <iframe
+            id="js-modelFrame"
+            src=""
+            frameborder="0"
+            allowfullscreen
+            mozallowfullscreen="true"
+            webkitallowfullscreen="true"
+            style="width:100%; height:100%;"
+          ></iframe>
+          -->
+
+        </div>
+
+      </div>
+      <!-- /Gallery main -->
+
+    </section>
+    <!-- /GALLERY -->
+
+    <!-- ── ขวา: ข้อมูลสินค้า ── -->
+    <section class="product-info">
+
+      <!-- ชื่อสินค้า — คอลัมน์ "ชื่อสินค้า" -->
+      <h1 class="product-info__name" id="js-productName">[ชื่อสินค้า]</h1>
+
+      <!-- รหัสสินค้า + Size — คอลัมน์ "รหัสสินค้า" + "size" -->
+      <p class="product-info__code">
+        <span id="js-productSize">[size]</span>
+        &nbsp;
+        <span id="js-productCode">[รหัสสินค้า]</span>
+      </p>
+
+      <!-- ตาราง Size / ขนาด -->
+      <!--
+        แถวในตารางนี้ = แถวที่มี รหัสสินค้า เดียวกันทั้งหมด
+        ถ้าสินค้ามีหลาย size (S/M/L) จะมีหลายแถว
+        JS render tbody โดยอัตโนมัติ
+      -->
+      <div class="product-info__table-wrap">
+        <table class="size-table">
+          <thead>
+            <tr>
+              <th>SIZE</th>
+              <th>PRODUCT SIZE (CM.)</th>
+            </tr>
+          </thead>
+          <tbody id="js-sizeTableBody">
+            <!-- [MOCK] แถวตัวอย่าง -->
+            <tr>
+              <!-- คอลัมน์ "size" -->
+              <td>[size]</td>
+              <!-- คอลัมน์ "ขนาดสินค้า (cm.)" -->
+              <td>[ขนาดสินค้า (cm.)]</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Finishing / Color options -->
+      <!--
+        คอลัมน์ "finishing" ของ row ที่มี รหัสสินค้า เดียวกัน
+        แต่ละ finishing ที่ต่างกัน = 1 swatch
+        กดแล้ว link ไปหน้าสินค้า variant นั้น
+        → product.html?group=[group]&code=[รหัส]&finishing=[finishing]
+      -->
+      <div class="product-info__finishing" id="js-finishingSection">
+
+        <h2 class="section-label">finishing</h2>
+
+        <div class="swatch-list" id="js-swatchList">
+
+          <!-- [MOCK] swatch ที่ active (สีปัจจุบัน) -->
+          <a
+            class="swatch swatch--active"
+            href="product.html?group=dhana&code=L16-2156&finishing=WD74-DG"
+            title="WD74-DG"
+          >
+            <img src="[URL swatch รูปเล็ก]" alt="WD74-DG" />
+            <span class="swatch__code">WD74-DG</span>
+          </a>
+
+          <!-- [MOCK] swatch สีอื่น -->
+          <a
+            class="swatch"
+            href="product.html?group=dhana&code=L16-2156&finishing=WD10-BE"
+            title="WD10-BE"
+          >
+            <img src="[URL swatch รูปเล็ก]" alt="WD10-BE" />
+            <span class="swatch__code">WD10-BE</span>
+          </a>
+
+          <a
+            class="swatch"
+            href="product.html?group=dhana&code=L16-2156&finishing=SN9-CE"
+            title="SN9-CE"
+          >
+            <img src="[URL swatch รูปเล็ก]" alt="SN9-CE" />
+            <span class="swatch__code">SN9-CE</span>
+          </a>
+
+        </div>
+
+        <!-- จำนวน finishing ทั้งหมด -->
+        <span class="finishing-count" id="js-finishingCount">[3 options]</span>
+
+        <!-- finishing อื่นๆ (คอลัมน์ "finishing อื่นๆ") -->
+        <!--
+          ถ้าคอลัมน์ "finishing อื่นๆ" มีข้อมูล JS จะแสดง section นี้
+          อาจเป็นข้อความอธิบาย หรือลิสต์รหัสสีเพิ่มเติม
+        -->
+        <div class="finishing-other" id="js-finishingOther">
+          <span class="finishing-other__label">finishing เพิ่มเติม:</span>
+          <span class="finishing-other__value">[finishing อื่นๆ]</span>
+        </div>
+
+      </div>
+      <!-- /Finishing -->
+
+      <!-- Dimensions — parse จากคอลัมน์ "ขนาดสินค้า (cm.)" -->
+      <!--
+        คอลัมน์ "ขนาดสินค้า (cm.)" มีรูปแบบเช่น "14.00x17.00x33.00"
+        JS จะ parse แล้วแสดงเป็น Width / Depth / Height
+      -->
+      <div class="product-info__dimensions">
+        <h2 class="section-label">Dimensions</h2>
+        <ul class="dimension-list" id="js-dimensionList">
+          <li>
+            <span class="dim-label">Width</span>
+            <span class="dim-sep">:</span>
+            <span class="dim-value" id="js-dimWidth">[14.00]</span>
+            <span class="dim-unit">cm</span>
+          </li>
+          <li>
+            <span class="dim-label">Depth</span>
+            <span class="dim-sep">:</span>
+            <span class="dim-value" id="js-dimDepth">[17.00]</span>
+            <span class="dim-unit">cm</span>
+          </li>
+          <li>
+            <span class="dim-label">Height</span>
+            <span class="dim-sep">:</span>
+            <span class="dim-value" id="js-dimHeight">[33.00]</span>
+            <span class="dim-unit">cm</span>
+          </li>
+        </ul>
+      </div>
+      <!-- /Dimensions -->
+
+    </section>
+    <!-- /PRODUCT INFO -->
+
+  </main>
+  <!-- /MAIN -->
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <p class="site-footer__copy">&copy; 2025 [Brand Name]. All rights reserved.</p>
+  </footer>
+  <!-- /FOOTER -->
+
+  <!--
+    model-viewer web component (CDN)
+    โหลดแบบ module เพื่อลด blocking
+  -->
+  <script
+    type="module"
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+  ></script>
+
+  <script type="module" src="js/sheets.js"></script>
+  <script type="module" src="js/product.js"></script>
+</body>
+</html>

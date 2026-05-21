@@ -1,0 +1,734 @@
+/* =============================================================
+   style.css — Product Catalog (Minimal White)
+   ตกแต่งเพิ่มเติมได้ตามต้องการ
+   ============================================================= */
+
+/* ── 1. RESET & BASE ──────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #ffffff;
+  color: #222222;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;          /* จัดทุกอย่างไว้กลางหน้า */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ── 2. UTILITY ───────────────────────────────────────────── */
+
+.hidden {
+  display: none !important;
+}
+
+/* ── 3. LAYOUT WRAPPER ────────────────────────────────────── */
+/* ทุก section/main ใช้ wrapper นี้เพื่อจำกัดความกว้าง */
+
+.site-header,
+.page-nav,
+.home-hero,
+.home-main,
+.category-main,
+.product-list-main,
+.product-detail,
+.site-footer {
+  width: 100%;
+  max-width: 1100px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* ── 4. HEADER ────────────────────────────────────────────── */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  height: 36px;
+  width: auto;
+}
+
+.logo-text {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #222;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #999;
+}
+
+.breadcrumb__link {
+  color: #999;
+}
+
+.breadcrumb__link:hover {
+  color: #222;
+}
+
+.breadcrumb__sep {
+  color: #ccc;
+}
+
+.breadcrumb__current {
+  color: #444;
+}
+
+/* ── 5. PAGE NAV (back + title + toggle) ──────────────────── */
+
+.page-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 20px;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.page-nav__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+/* ── 6. BUTTONS ───────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-ghost {
+  border: 1px solid #ddd;
+  color: #555;
+  background: #fff;
+}
+
+.btn-ghost:hover {
+  background: #f5f5f5;
+  color: #222;
+}
+
+/* ── 7. VIEW TOGGLE ───────────────────────────────────────── */
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.view-toggle__btn {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  transition: background 0.15s, color 0.15s;
+}
+
+.view-toggle__btn--active,
+.view-toggle__btn:hover {
+  background: #f0f0f0;
+  color: #222;
+}
+
+/* ── 8. HOME PAGE ─────────────────────────────────────────── */
+
+.page-home {
+  background: #fafafa;
+}
+
+.home-hero {
+  padding-top: 48px;
+  padding-bottom: 32px;
+  text-align: center;
+}
+
+.home-hero__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.home-hero__sub {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* กริด 2 การ์ดใหญ่ */
+.group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding-bottom: 64px;
+}
+
+.group-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+
+.group-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* กล่องรูป placeholder */
+.group-card__image-area {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-card__placeholder-img {
+  font-size: 0.8rem;
+  color: #bbb;
+}
+
+.group-card__footer {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-card__name {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.group-card__cta {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* ── 9. CATEGORY PAGE ─────────────────────────────────────── */
+
+.category-main {
+  padding-top: 24px;
+  padding-bottom: 64px;
+}
+
+/* กริดประเภทสินค้า — สูงสุด 4 คอลัมน์ */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 0.2s;
+  padding-bottom: 14px;
+}
+
+.type-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.type-card__icon-area {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-card__placeholder-img {
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.type-card__label {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  padding: 0 8px;
+}
+
+/* ── 10. PRODUCT LIST PAGE ────────────────────────────────── */
+
+.product-list-main {
+  padding-top: 8px;
+  padding-bottom: 64px;
+}
+
+/* GRID VIEW */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+
+.product-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.product-card__image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f4f4f4;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-card__no-image {
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.product-card__info {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-card__code {
+  font-size: 0.72rem;
+  color: #999;
+  letter-spacing: 0.03em;
+}
+
+.product-card__name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #222;
+}
+
+.product-card__finishing {
+  font-size: 0.72rem;
+  color: #aaa;
+}
+
+/* LIST VIEW */
+.product-table-wrap {
+  overflow-x: auto;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.product-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid #eee;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.product-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.product-table .col-thumb img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f4f4f4;
+}
+
+.product-row:hover td {
+  background: #fafafa;
+}
+
+.badge-3d {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #f0f0f0;
+  font-size: 0.72rem;
+  color: #666;
+}
+
+/* STATE MESSAGES */
+.loading-state,
+.empty-state,
+.error-state {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+/* ── 11. PRODUCT DETAIL PAGE ──────────────────────────────── */
+
+.product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* ซ้าย: gallery | ขวา: info */
+  gap: 48px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+  align-items: start;
+}
+
+/* GALLERY */
+.gallery {
+  display: flex;
+  gap: 12px;
+}
+
+/* Thumbnail strip แนวตั้ง */
+.gallery__thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.thumb {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f4f4f4;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb--active {
+  border-color: #222;
+}
+
+.thumb--3d {
+  background: #f0f0f0;
+}
+
+.thumb__label {
+  font-size: 0.68rem;
+  color: #666;
+  font-weight: 600;
+}
+
+/* Main display area */
+.gallery__main {
+  flex: 1;
+}
+
+.gallery__image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f4f4f4;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery__main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery__model-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+.no-image {
+  font-size: 0.8rem;
+  color: #bbb;
+}
+
+/* PRODUCT INFO */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.product-info__name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.product-info__code {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: -16px;    /* ดึงขึ้นชิดชื่อ */
+  letter-spacing: 0.02em;
+}
+
+/* ตาราง size */
+.product-info__table-wrap {
+  overflow-x: auto;
+}
+
+.size-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.size-table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #f7f7f7;
+  border: 1px solid #e8e8e8;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.size-table td {
+  padding: 8px 10px;
+  border: 1px solid #e8e8e8;
+  color: #333;
+}
+
+/* Section label */
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+/* Finishing swatches */
+.product-info__finishing {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.swatch-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.swatch img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  background: #f4f4f4;
+  transition: border-color 0.15s;
+}
+
+.swatch--active img {
+  border-color: #222;
+}
+
+.swatch__code {
+  font-size: 0.65rem;
+  color: #888;
+  text-align: center;
+}
+
+.finishing-count {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.finishing-other {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.finishing-other__label {
+  font-weight: 500;
+  color: #555;
+  margin-right: 4px;
+}
+
+/* Dimensions */
+.dimension-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dimension-list li {
+  display: flex;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #444;
+}
+
+.dim-label {
+  color: #888;
+  min-width: 48px;
+}
+
+.dim-unit {
+  color: #aaa;
+}
+
+/* ── 12. FOOTER ───────────────────────────────────────────── */
+
+.site-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.site-footer__copy {
+  font-size: 0.78rem;
+  color: #bbb;
+}
+
+/* ── 13. RESPONSIVE ───────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .group-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .type-grid,
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .product-detail {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .type-grid,
+  .product-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gallery {
+    flex-direction: column-reverse;
+  }
+
+  .gallery__thumbs {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .thumb {
+    flex-shrink: 0;
+  }
+}

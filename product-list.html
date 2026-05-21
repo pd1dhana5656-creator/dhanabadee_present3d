@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รายการสินค้า — Product Catalog</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-product-list">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="assets/logo.png" alt="Brand Logo" />
+      <span class="logo-text">[BRAND NAME]</span>
+    </div>
+
+    <!-- Breadcrumb: Home / [กลุ่ม] / [ประเภท] -->
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a class="breadcrumb__link" href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <!--
+        JS เติม href กลับไปหน้า category ของ group ที่ถูกต้อง
+        เช่น category.html?group=dhana
+      -->
+      <a class="breadcrumb__link" id="js-groupLink" href="#">[กลุ่มสินค้า]</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current" id="js-typeLabel">[ประเภทสินค้า]</span>
+    </nav>
+  </header>
+  <!-- /HEADER -->
+
+  <!-- ==================== PAGE NAV ==================== -->
+  <div class="page-nav">
+    <!-- ปุ่ม Back → กลับหน้า category ของ group นั้น -->
+    <a class="btn btn-ghost" id="js-backBtn" href="#">← ย้อนกลับ</a>
+
+    <!-- ชื่อหน้า -->
+    <h1 class="page-nav__title" id="js-listHeading">[ประเภทสินค้า]</h1>
+
+    <!-- Toggle: Grid view / List view -->
+    <div class="view-toggle" role="group" aria-label="เปลี่ยนมุมมอง">
+
+      <!-- Grid view (default) — แสดงรูปภาพใหญ่ -->
+      <button
+        class="view-toggle__btn view-toggle__btn--active"
+        id="btn-grid"
+        data-view="grid"
+        title="มุมมองรูปภาพ"
+        aria-pressed="true"
+      >
+        &#9632;&#9632;&#9632;&#9632; [Grid]
+      </button>
+
+      <!-- List view — แสดงแบบตารางรายละเอียด -->
+      <button
+        class="view-toggle__btn"
+        id="btn-list"
+        data-view="list"
+        title="มุมมองรายละเอียด"
+        aria-pressed="false"
+      >
+        &#9776; [List]
+      </button>
+
+    </div>
+  </div>
+  <!-- /PAGE NAV -->
+
+  <!-- ==================== MAIN ==================== -->
+  <!--
+    JS (product-list.js) จะ:
+    1. อ่าน ?group= และ ?type= จาก URL
+    2. โหลด CSV ของ sheet นั้น
+    3. กรองแถวที่มี "ประเภทสินค้า" ตรงกับ ?type=
+    4. render ทั้ง #js-productGrid และ #js-productTableBody
+    5. จัดการ toggle สลับ grid ↔ list
+  -->
+  <main class="product-list-main">
+
+    <!-- ── GRID VIEW (default แสดง) ── -->
+    <!--
+      แต่ละการ์ดใช้ "รหัสสินค้า" เป็น key สำหรับ link ไปหน้า product
+      รูปภาพมาจากคอลัมน์ "รูปภาพ" ใน Sheets
+    -->
+    <section class="product-grid" id="js-productGrid">
+
+      <!--
+        [MOCK] ตัวอย่างโครงสร้าง product-card 1 ใบ
+        JS จะ render แบบนี้ซ้ำตามจำนวนสินค้าที่กรองได้
+        href → product.html?group=[group]&code=[รหัสสินค้า]
+      -->
+      <a class="product-card" href="product.html?group=dhana&code=L16-2156">
+        <div class="product-card__image-wrap">
+          <!--
+            src = URL จากคอลัมน์ "รูปภาพ" (Google Drive link)
+            ถ้าว่าง JS จะแสดง placeholder
+          -->
+          <img
+            class="product-card__image"
+            src="[URL รูปภาพจาก Sheets]"
+            alt="[ชื่อสินค้า]"
+            loading="lazy"
+          />
+          <!-- placeholder ถ้าไม่มีรูป -->
+          <div class="product-card__no-image hidden">[ไม่มีรูปภาพ]</div>
+        </div>
+        <div class="product-card__info">
+          <!-- คอลัมน์ "รหัสสินค้า" -->
+          <span class="product-card__code">[รหัสสินค้า]  |  [size]</span>
+          <!-- คอลัมน์ "ชื่อสินค้า" -->
+          <h3 class="product-card__name">[ชื่อสินค้า]</h3>
+          <!-- คอลัมน์ "finishing" (สรุปสั้น) -->
+          <span class="product-card__finishing">[finishing code]</span>
+        </div>
+      </a>
+
+      <!-- ... JS render ที่เหลือ ... -->
+
+    </section>
+    <!-- /GRID VIEW -->
+
+    <!-- ── LIST VIEW (ซ่อนไว้ default) ── -->
+    <!--
+      แสดงรายละเอียดครบในรูปแบบตาราง
+      คอลัมน์ตรงกับ header ใน Sheets ทุกตัว
+    -->
+    <section class="product-table-wrap hidden" id="js-productTable">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th class="col-thumb">รูป</th>
+            <th class="col-name">ชื่อสินค้า</th>
+            <th class="col-code">รหัสสินค้า</th>
+            <th class="col-size">Size</th>
+            <th class="col-type">ประเภทสินค้า</th>
+            <th class="col-dim">ขนาด (cm.)</th>
+            <th class="col-finish">Finishing</th>
+            <th class="col-finish-other">Finishing อื่นๆ</th>
+            <th class="col-3d">โมเดล 3D</th>
+          </tr>
+        </thead>
+        <tbody id="js-productTableBody">
+
+          <!--
+            [MOCK] ตัวอย่างแถวสินค้า 1 แถว
+            JS จะ render ซ้ำ + ทำให้ทั้งแถว clickable ไปหน้า product
+          -->
+          <tr class="product-row" data-href="product.html?group=dhana&code=L16-2156">
+            <td class="col-thumb">
+              <img src="[URL รูปภาพ]" alt="[ชื่อสินค้า]" />
+            </td>
+            <td class="col-name">[ชื่อสินค้า]</td>
+            <td class="col-code">[รหัสสินค้า]</td>
+            <td class="col-size">[size]</td>
+            <td class="col-type">[ประเภทสินค้า]</td>
+            <td class="col-dim">[ขนาดสินค้า (cm.)]</td>
+            <td class="col-finish">[finishing]</td>
+            <td class="col-finish-other">[finishing อื่นๆ]</td>
+            <td class="col-3d">
+              <!-- แสดง badge ถ้ามีโมเดล 3D -->
+              <span class="badge-3d">[360°]</span>
+            </td>
+          </tr>
+
+          <!-- ... JS render ที่เหลือ ... -->
+
+        </tbody>
+      </table>
+    </section>
+    <!-- /LIST VIEW -->
+
+    <!-- Loading / Error state -->
+    <div class="loading-state hidden" id="js-loading">[กำลังโหลดข้อมูล...]</div>
+    <div class="empty-state  hidden" id="js-empty">[ไม่พบสินค้าในประเภทนี้]</div>
+    <div class="error-state  hidden" id="js-error">[โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่]</div>
+
+  </main>
+  <!-- /MAIN -->
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <p class="site-footer__copy">&copy; 2025 [Brand Name]. All rights reserved.</p>
+  </footer>
+  <!-- /FOOTER -->
+
+  <script type="module" src="js/sheets.js"></script>
+  <script type="module" src="js/product-list.js"></script>
+</body>
+</html>
