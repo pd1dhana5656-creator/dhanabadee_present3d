@@ -5,6 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>รายการสินค้า — Product Catalog</title>
   <link rel="stylesheet" href="style.css" />
+  
+  <script>
+    (function () {
+      var p = new URLSearchParams(window.location.search);
+      var group = p.get("group") || "dhana";
+      var catUrl = "category.html?group=" + encodeURIComponent(group);
+      document.addEventListener("DOMContentLoaded", function () {
+        var backBtn   = document.getElementById("js-backBtn");
+        var groupLink = document.getElementById("js-groupLink");
+        if (backBtn)   backBtn.href   = catUrl;
+        if (groupLink) groupLink.href = catUrl;
+      });
+    })();
+  </script>
+  
 </head>
 <body class="page-product-list">
 
