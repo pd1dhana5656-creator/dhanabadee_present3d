@@ -573,7 +573,7 @@ ul, ol {
 }
 
 .size-table th {
-  text-align: left;
+  text-align: center;
   padding: 8px 10px;
   background: #f7f7f7;
   border: 1px solid #e8e8e8;
