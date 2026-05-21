@@ -152,5 +152,4 @@ function renderFinishing(currentRow, finishingCode, variants) {
     swatchList.appendChild(a);
   });
 
-  countEl.textContent = `${variants.length} options`;
 }
