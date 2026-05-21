@@ -732,3 +732,20 @@ ul, ol {
     flex-shrink: 0;
   }
 }
+
+/* ── เพิ่มเติม: Finishing & Variants ──────────────────────── */
+
+/* ชื่อ finishing ของสินค้าตัวนี้ (ข้อความ ไม่คลิก) */
+.finishing-name {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* swatch ที่ยังไม่มีรูป — กล่องเปล่า */
+.swatch__no-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  background: #f0f0f0;
+}
