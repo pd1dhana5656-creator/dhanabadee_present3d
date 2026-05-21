@@ -584,6 +584,7 @@ ul, ol {
 }
 
 .size-table td {
+  text-align: center;
   padding: 8px 10px;
   border: 1px solid #e8e8e8;
   color: #333;
