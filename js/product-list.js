@@ -78,6 +78,13 @@ loadProducts(group)
         window.location.href = row.dataset.href;
       });
     });
+
+    // ── Search ──
+    document.getElementById("js-searchInput")
+      .addEventListener("input", function () {
+        filterBySearch(this.value);
+      });
+    
   })
   .catch((err) => {
     showLoading(false);
@@ -138,4 +145,22 @@ function makeTableRow(group, p) {
 function showLoading(show) {
   loading.classList.toggle("hidden", show === false);
   productGrid.classList.toggle("hidden", show);
+}
+
+function filterBySearch(query) {
+  const q = query.trim().toLowerCase();
+
+  // กรอง grid cards
+  productGrid.querySelectorAll(".product-card").forEach((card) => {
+    const name = (card.querySelector(".product-card__name")?.textContent || "").toLowerCase();
+    const code = (card.querySelector(".product-card__code")?.textContent || "").toLowerCase();
+    card.style.display = (!q || name.includes(q) || code.includes(q)) ? "" : "none";
+  });
+
+  // กรอง table rows
+  tbody.querySelectorAll(".product-row").forEach((row) => {
+    const name = (row.querySelector(".col-name")?.textContent || "").toLowerCase();
+    const code = (row.querySelector(".col-code")?.textContent || "").toLowerCase();
+    row.style.display = (!q || name.includes(q) || code.includes(q)) ? "" : "none";
+  });
 }
