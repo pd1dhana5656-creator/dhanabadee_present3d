@@ -754,7 +754,7 @@ ul, ol {
 }
 
 .search-bar {
-  width: 200%;
+  width: 100%;
   max-width: 2000px;
   padding: 0 30px 20px;
 }
