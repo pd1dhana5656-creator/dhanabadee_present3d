@@ -756,12 +756,12 @@ ul, ol {
 .search-bar {
   width: 100%;
   max-width: 2000px;
-  padding: 0 30px 20px;
+  padding: 0 24px 16px;
 }
 
 .search-bar__input {
   width: 100%;
-  padding: 20px 20px;
+  padding: 10px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 0.9rem;
