@@ -18,7 +18,6 @@ loadProducts(group)
       document.body.innerHTML += `<p style="padding:2rem">[ไม่พบสินค้า รหัส: ${code}]</p>`;
       return;
     }
-    // ดึง variant ทั้งหมดที่มี base code เดียวกัน (auto จาก _)
     const variants = getAllVariants(products, current);
     renderProduct(current, variants);
   })
@@ -34,14 +33,12 @@ function renderProduct(row, variants) {
   document.getElementById("js-productSize").textContent = row["size"] || "";
   document.getElementById("js-productCode").textContent = row["รหัสสินค้า"];
 
-  // ตาราง size
   document.getElementById("js-sizeTableBody").innerHTML = `
     <tr>
       <td>${row["size"] || "—"}</td>
       <td>${row["ขนาดสินค้า (cm.)"] || "—"}</td>
     </tr>`;
 
-  // Dimensions
   const dims = (row["ขนาดสินค้า (cm.)"] || "").split(/[xX×]/);
   document.getElementById("js-dimWidth").textContent  = dims[0]?.trim() || "—";
   document.getElementById("js-dimDepth").textContent  = dims[1]?.trim() || "—";
@@ -49,6 +46,47 @@ function renderProduct(row, variants) {
 
   renderGallery(row);
   renderFinishing(row, finishing, variants);
+}
+
+// ─── Embed code parsers ────────────────────────────────────────────────────────
+
+/**
+ * รับ cell รูปภาพที่อาจเป็น:
+ *   - URL ตรงๆ คั่นด้วย newline: "https://i.ibb.co/xxx.jpg"
+ *   - embed code: '<img src="https://i.ibb.co/xxx.jpg" alt="..." />'
+ *   - embed หลายรูปต่อกัน: '<img src="url1" ...><img src="url2" ...>'
+ * → คืน array of URL
+ */
+function parseImageUrls(cell) {
+  const raw = (cell || "").trim();
+  if (!raw) return [];
+
+  if (raw.includes("<img")) {
+    // ดึง src ทุกตัวออกจาก embed code
+    const matches = [...raw.matchAll(/src=["']([^"']+)["']/g)];
+    return matches.map(m => m[1]).filter(Boolean);
+  }
+
+  // URL ธรรมดา คั่นด้วย newline
+  return raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * รับ cell โมเดล 3D ที่อาจเป็น:
+ *   - URL ตรงๆ: "https://sketchfab.com/models/.../embed"
+ *   - embed code: '<iframe src="..." ...></iframe>'
+ * → คืน URL string
+ */
+function parseModelUrl(cell) {
+  const raw = (cell || "").trim();
+  if (!raw) return "";
+
+  if (raw.includes("<iframe")) {
+    const m = raw.match(/src=["']([^"']+)["']/);
+    return m ? m[1] : "";
+  }
+
+  return raw;
 }
 
 // ─── Gallery ──────────────────────────────────────────────────────────────────
@@ -59,8 +97,8 @@ function renderGallery(row) {
   const mainWrap   = document.getElementById("js-mainImageWrap");
   const modelWrap  = document.getElementById("js-modelWrap");
 
-  const imageUrls  = (row["รูปภาพ"] || "").split(",").map(s => s.trim()).filter(Boolean);
-  const model3dUrl = (row["โมเดล 3D"] || "").trim();
+  const imageUrls  = parseImageUrls(row["รูปภาพ"]);
+  const model3dUrl = parseModelUrl(row["โมเดล 3D"]);
 
   thumbStrip.innerHTML = "";
 
@@ -112,15 +150,13 @@ function renderGallery(row) {
 // ─── Finishing & Variants ──────────────────────────────────────────────────────
 
 function renderFinishing(currentRow, finishingCode, variants) {
-  // 1) ชื่อ finishing ของสินค้าตัวนี้ (ข้อความ ไม่คลิก)
-  //    ใช้คอลัมน์ "finishing" ก่อน ถ้าว่างใช้ finishing code จากรหัส
+  // ชื่อ finishing ของสินค้าตัวนี้ (ข้อความ ไม่คลิก)
   const finLabel = currentRow["finishing"] || finishingCode || "—";
   document.getElementById("js-finishingName").textContent = finLabel;
 
-  // 2) variant สีอื่น (เฉพาะ row ที่ไม่ใช่ตัวปัจจุบัน)
+  // variant สีอื่น (เฉพาะ row ที่ไม่ใช่ตัวปัจจุบัน)
   const variantsSection = document.getElementById("js-variantsSection");
   const swatchList      = document.getElementById("js-swatchList");
-  const countEl         = document.getElementById("js-finishingCount");
 
   const currentCode = (currentRow["รหัสสินค้า"] || "").trim();
   const others = variants.filter(v => (v["รหัสสินค้า"] || "").trim() !== currentCode);
@@ -136,20 +172,19 @@ function renderFinishing(currentRow, finishingCode, variants) {
   others.forEach((v) => {
     const href = `product.html?group=${encodeURIComponent(group)}&code=${encodeURIComponent(v["รหัสสินค้า"])}`;
     const { finishing: fin } = splitCode(v["รหัสสินค้า"]);
+    const label = v["finishing"] || fin || v["ชื่อสินค้า"] || v["รหัสสินค้า"];
 
     const a = document.createElement("a");
     a.className = "swatch";
     a.href  = href;
-    // label = คอลัมน์ finishing → finishing code จากรหัส → ชื่อสินค้า
-    const label = v["finishing"] || fin || v["ชื่อสินค้า"] || v["รหัสสินค้า"];
     a.title = label;
 
-    const imgUrl = (v["รูปภาพ"] || "").split(",")[0].trim();
+    // ใช้ parseImageUrls เพื่อดึงรูปแรกของ variant นั้น
+    const imgUrl = parseImageUrls(v["รูปภาพ"])[0] || "";
     a.innerHTML = imgUrl
       ? `<img src="${imgUrl}" alt="${label}" /><span class="swatch__code">${label}</span>`
       : `<div class="swatch__no-img"></div><span class="swatch__code">${label}</span>`;
 
     swatchList.appendChild(a);
   });
-
 }
