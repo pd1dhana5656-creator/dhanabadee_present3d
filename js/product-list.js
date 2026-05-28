@@ -94,6 +94,16 @@ loadProducts(group)
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
+function parseFirstImage(cell) {
+  const raw = (cell || "").trim();
+  if (!raw) return "";
+  if (raw.includes("<img")) {
+    const m = raw.match(/src=["']([^"']+)["']/);
+    return m ? m[1] : "";
+  }
+  return raw.split(/\r?\n/)[0].trim();
+}
+
 /** สร้าง URL ไปหน้า product โดยใช้ รหัสสินค้า เป็น key */
 function productUrl(group, p) {
   return `product.html?group=${encodeURIComponent(group)}&code=${encodeURIComponent(p["รหัสสินค้า"])}`;
