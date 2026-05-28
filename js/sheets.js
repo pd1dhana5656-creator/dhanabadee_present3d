@@ -94,13 +94,17 @@ export function getParam(key) {
 // ─── Internal ─────────────────────────────────────────────────────────────────
 
 function parseCSV(csvText) {
-  const lines = csvText.trim().split("\n");
-  if (lines.length < 2) return [];
-  const headers = splitLine(lines[0]).map(clean);
-  return lines
+  // ใช้ regex เดียวกับโปรเจคก่อนหน้า:
+  // ตัด row โดยไม่ตัด newline ที่อยู่ใน quoted field
+  const rows = csvText.trim().split(/\r?\n(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+  if (rows.length < 2) return [];
+
+  const headers = splitRow(rows[0]).map(clean);
+
+  return rows
     .slice(1)
-    .map((line) => {
-      const values = splitLine(line);
+    .map((row) => {
+      const values = splitRow(row);
       const obj = {};
       headers.forEach((h, i) => { obj[h] = clean(values[i] ?? ""); });
       return obj;
@@ -108,18 +112,16 @@ function parseCSV(csvText) {
     .filter((p) => p["ชื่อสินค้า"] || p["รหัสสินค้า"]);
 }
 
-function splitLine(line) {
-  const result = [];
-  let cur = "", inQ = false;
-  for (const ch of line) {
-    if (ch === '"') { inQ = !inQ; continue; }
-    if (ch === "," && !inQ) { result.push(cur); cur = ""; continue; }
-    cur += ch;
-  }
-  result.push(cur);
-  return result;
+// ตัด column โดยไม่ตัด comma ที่อยู่ใน quoted field
+function splitRow(row) {
+  return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 }
 
 function clean(str) {
-  return (str ?? "").replace(/^\uFEFF/, "").trim();
+  // ลบ BOM, ลบ quote รอบนอก, แปลง "" → " ภายใน, trim
+  let s = (str ?? "").replace(/^\uFEFF/, "").trim();
+  if (s.startsWith('"') && s.endsWith('"')) {
+    s = s.slice(1, -1).replace(/""/g, '"');
+  }
+  return s.trim();
 }
