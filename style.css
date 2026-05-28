@@ -851,6 +851,7 @@ ul, ol {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  background: none;
   border: none;
   color: #fff;
   font-size: 3rem;
