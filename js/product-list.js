@@ -125,8 +125,7 @@ function makeTableRow(group, p) {
   tr.className = "product-row";
   tr.dataset.href = productUrl(group, p);
 
-  const imgSrc = p["รูปภาพ"];
-  const has3D  = !!p["โมเดล 3D"];
+  const imgSrc = parseFirstImage(p["รูปภาพ"]);
 
   tr.innerHTML = `
     <td class="col-thumb">
