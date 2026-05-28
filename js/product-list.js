@@ -104,7 +104,7 @@ function makeGridCard(group, p) {
   a.className = "product-card";
   a.href = productUrl(group, p);
 
-  const imgSrc = p["รูปภาพ"];
+  const imgSrc = parseFirstImage(p["รูปภาพ"]);
   const imgHtml = imgSrc
     ? `<img class="product-card__image" src="${imgSrc}" alt="${p["ชื่อสินค้า"]}" loading="lazy" />`
     : `<div class="product-card__no-image">[ไม่มีรูปภาพ]</div>`;
