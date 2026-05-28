@@ -50,42 +50,23 @@ function renderProduct(row, variants) {
 
 // ─── Embed code parsers ────────────────────────────────────────────────────────
 
-/**
- * รับ cell รูปภาพที่อาจเป็น:
- *   - URL ตรงๆ คั่นด้วย newline: "https://i.ibb.co/xxx.jpg"
- *   - embed code: '<img src="https://i.ibb.co/xxx.jpg" alt="..." />'
- *   - embed หลายรูปต่อกัน: '<img src="url1" ...><img src="url2" ...>'
- * → คืน array of URL
- */
 function parseImageUrls(cell) {
   const raw = (cell || "").trim();
   if (!raw) return [];
-
   if (raw.includes("<img")) {
-    // ดึง src ทุกตัวออกจาก embed code
     const matches = [...raw.matchAll(/src=["']([^"']+)["']/g)];
     return matches.map(m => m[1]).filter(Boolean);
   }
-
-  // URL ธรรมดา คั่นด้วย newline
   return raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
 }
 
-/**
- * รับ cell โมเดล 3D ที่อาจเป็น:
- *   - URL ตรงๆ: "https://sketchfab.com/models/.../embed"
- *   - embed code: '<iframe src="..." ...></iframe>'
- * → คืน URL string
- */
 function parseModelUrl(cell) {
   const raw = (cell || "").trim();
   if (!raw) return "";
-
   if (raw.includes("<iframe")) {
     const m = raw.match(/src=["']([^"']+)["']/);
     return m ? m[1] : "";
   }
-
   return raw;
 }
 
@@ -97,12 +78,15 @@ function renderGallery(row) {
   const mainWrap   = document.getElementById("js-mainImageWrap");
   const modelWrap  = document.getElementById("js-modelWrap");
 
-  console.log("raw รูปภาพ:", row["รูปภาพ"]);
-  console.log("raw โมเดล 3D:", row["โมเดล 3D"]);
   const imageUrls  = parseImageUrls(row["รูปภาพ"]);
   const model3dUrl = parseModelUrl(row["โมเดล 3D"]);
-  console.log("imageUrls:", imageUrls);
-  console.log("model3dUrl:", model3dUrl);
+
+  // สร้าง media list สำหรับ lightbox
+  // รูปภาพก่อน ตามด้วย 3D (ถ้ามี)
+  const mediaList = [
+    ...imageUrls.map(url => ({ type: "image", src: url })),
+    ...(model3dUrl ? [{ type: "model", src: model3dUrl }] : [])
+  ];
 
   thumbStrip.innerHTML = "";
 
@@ -117,6 +101,12 @@ function renderGallery(row) {
   if (imageUrls.length > 0) {
     mainImage.src = imageUrls[0];
     mainImage.alt = document.getElementById("js-productName").textContent;
+    // คลิกรูปใหญ่ → เปิด lightbox ที่รูปปัจจุบัน
+    mainImage.style.cursor = "zoom-in";
+    mainImage.onclick = () => {
+      const idx = mediaList.findIndex(m => m.src === mainImage.src);
+      openLightbox(mediaList, idx >= 0 ? idx : 0);
+    };
   } else {
     mainWrap.innerHTML = "<div class='no-image'>[ไม่มีรูปภาพ]</div>";
   }
@@ -129,6 +119,9 @@ function renderGallery(row) {
     thumbStrip.appendChild(btn3d);
   }
 
+  // init lightbox
+  initLightbox(mediaList);
+
   function switchToImage(url, btn) {
     mainImage.src = url;
     mainWrap.classList.remove("hidden");
@@ -137,9 +130,7 @@ function renderGallery(row) {
   }
 
   function switchToModel(url, btn) {
-    modelWrap.innerHTML = url.includes("sketchfab.com")
-      ? `<iframe src="${url}" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`
-      : `<model-viewer src="${url}" alt="3D" auto-rotate camera-controls style="width:100%;height:100%;"></model-viewer>`;
+    modelWrap.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen style="width:100%;height:100%;"></iframe>`;
     mainWrap.classList.add("hidden");
     modelWrap.classList.remove("hidden");
     setActive(btn);
@@ -154,11 +145,9 @@ function renderGallery(row) {
 // ─── Finishing & Variants ──────────────────────────────────────────────────────
 
 function renderFinishing(currentRow, finishingCode, variants) {
-  // ชื่อ finishing ของสินค้าตัวนี้ (ข้อความ ไม่คลิก)
   const finLabel = currentRow["finishing"] || finishingCode || "—";
   document.getElementById("js-finishingName").textContent = finLabel;
 
-  // variant สีอื่น (เฉพาะ row ที่ไม่ใช่ตัวปัจจุบัน)
   const variantsSection = document.getElementById("js-variantsSection");
   const swatchList      = document.getElementById("js-swatchList");
 
@@ -183,7 +172,6 @@ function renderFinishing(currentRow, finishingCode, variants) {
     a.href  = href;
     a.title = label;
 
-    // ใช้ parseImageUrls เพื่อดึงรูปแรกของ variant นั้น
     const imgs = parseImageUrls(v["รูปภาพ"]);
     const imgUrl = imgs[imgs.length - 1] || "";
     a.innerHTML = imgUrl
@@ -192,4 +180,132 @@ function renderFinishing(currentRow, finishingCode, variants) {
 
     swatchList.appendChild(a);
   });
+}
+
+// ─── Lightbox ──────────────────────────────────────────────────────────────────
+
+let _media    = [];
+let _index    = 0;
+let _scale    = 1;
+let _tx       = 0;
+let _ty       = 0;
+let _dragging = false;
+let _startX   = 0;
+let _startY   = 0;
+let _initiated = false;
+
+function initLightbox(mediaList) {
+  _media = mediaList;
+
+  // bind events ครั้งเดียว
+  if (_initiated) return;
+  _initiated = true;
+
+  const lb         = document.getElementById("js-lightbox");
+  const lbClose    = document.getElementById("js-lbClose");
+  const lbPrev     = document.getElementById("js-lbPrev");
+  const lbNext     = document.getElementById("js-lbNext");
+  const lbZoomIn   = document.getElementById("js-lbZoomIn");
+  const lbZoomOut  = document.getElementById("js-lbZoomOut");
+  const lbReset    = document.getElementById("js-lbReset");
+  const lbImg      = document.getElementById("js-lbImg");
+
+  lbClose.onclick = closeLightbox;
+  lb.addEventListener("click", (e) => { if (e.target === lb) closeLightbox(); });
+
+  lbPrev.onclick = () => openLightbox(_media, _index - 1);
+  lbNext.onclick = () => openLightbox(_media, _index + 1);
+
+  lbZoomIn.onclick  = () => applyZoom(0.25);
+  lbZoomOut.onclick = () => applyZoom(-0.25);
+  lbReset.onclick   = resetZoom;
+
+  // drag
+  lbImg.addEventListener("mousedown", (e) => {
+    if (_scale <= 1) return;
+    _dragging = true;
+    _startX = e.clientX - _tx;
+    _startY = e.clientY - _ty;
+    lbImg.classList.add("dragging");
+    e.preventDefault();
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!_dragging) return;
+    _tx = e.clientX - _startX;
+    _ty = e.clientY - _startY;
+    applyTransform();
+  });
+  window.addEventListener("mouseup", () => {
+    _dragging = false;
+    lbImg.classList.remove("dragging");
+  });
+
+  // keyboard
+  window.addEventListener("keydown", (e) => {
+    if (lb.classList.contains("hidden")) return;
+    if (e.key === "ArrowLeft")  openLightbox(_media, _index - 1);
+    if (e.key === "ArrowRight") openLightbox(_media, _index + 1);
+    if (e.key === "Escape")     closeLightbox();
+  });
+}
+
+function openLightbox(mediaList, index) {
+  if (index < 0 || index >= mediaList.length) return;
+  _media = mediaList;
+  _index = index;
+
+  const lb          = document.getElementById("js-lightbox");
+  const lbImgWrap   = document.getElementById("js-lbImgWrap");
+  const lbModelWrap = document.getElementById("js-lbModelWrap");
+  const lbImg       = document.getElementById("js-lbImg");
+  const lbControls  = document.getElementById("js-lbControls");
+  const lbPrev      = document.getElementById("js-lbPrev");
+  const lbNext      = document.getElementById("js-lbNext");
+
+  resetZoom();
+  lb.classList.remove("hidden");
+
+  const item = mediaList[index];
+
+  if (item.type === "image") {
+    lbImg.src = item.src;
+    lbImgWrap.classList.remove("hidden");
+    lbModelWrap.classList.add("hidden");
+    lbModelWrap.innerHTML = "";
+    lbControls.classList.remove("hidden");
+  } else {
+    // 3D model — ซ่อน zoom controls
+    lbModelWrap.innerHTML = `<iframe src="${item.src}" allowfullscreen></iframe>`;
+    lbModelWrap.classList.remove("hidden");
+    lbImgWrap.classList.add("hidden");
+    lbControls.classList.add("hidden");
+  }
+
+  // disable ปุ่มที่ขอบ ไม่วน
+  lbPrev.disabled = (index === 0);
+  lbNext.disabled = (index === mediaList.length - 1);
+}
+
+function closeLightbox() {
+  const lb          = document.getElementById("js-lightbox");
+  const lbModelWrap = document.getElementById("js-lbModelWrap");
+  lb.classList.add("hidden");
+  lbModelWrap.innerHTML = "";  // หยุด iframe เมื่อปิด
+  resetZoom();
+}
+
+function applyZoom(delta) {
+  _scale = Math.min(4, Math.max(1, _scale + delta));
+  if (_scale === 1) { _tx = 0; _ty = 0; }
+  applyTransform();
+}
+
+function resetZoom() {
+  _scale = 1; _tx = 0; _ty = 0;
+  applyTransform();
+}
+
+function applyTransform() {
+  const img = document.getElementById("js-lbImg");
+  if (img) img.style.transform = `translate(${_tx}px, ${_ty}px) scale(${_scale})`;
 }
