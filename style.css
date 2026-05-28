@@ -862,7 +862,6 @@ ul, ol {
   z-index: 10;
   line-height: 1;
 }
-.lightbox__nav:hover { background: rgba(255,255,255,0.25); }
 .lightbox__nav--prev { left: 16px; }
 .lightbox__nav--next { right: 16px; }
 .lightbox__nav:disabled {
