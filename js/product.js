@@ -97,8 +97,12 @@ function renderGallery(row) {
   const mainWrap   = document.getElementById("js-mainImageWrap");
   const modelWrap  = document.getElementById("js-modelWrap");
 
+  console.log("raw รูปภาพ:", row["รูปภาพ"]);
+  console.log("raw โมเดล 3D:", row["โมเดล 3D"]);
   const imageUrls  = parseImageUrls(row["รูปภาพ"]);
   const model3dUrl = parseModelUrl(row["โมเดล 3D"]);
+  console.log("imageUrls:", imageUrls);
+  console.log("model3dUrl:", model3dUrl);
 
   thumbStrip.innerHTML = "";
 
