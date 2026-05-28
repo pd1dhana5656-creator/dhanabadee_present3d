@@ -824,7 +824,7 @@ ul, ol {
  
 .lightbox__img {
   max-width: 90vw;
-  max-height: 90vh;
+  max-height: 75vh;
   object-fit: contain;
   cursor: grab;
   transform-origin: center center;
@@ -884,7 +884,7 @@ ul, ol {
 }
  
 .lightbox__ctrl-btn {
-  background: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.55);
   border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
   padding: 8px 18px;
