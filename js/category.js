@@ -52,9 +52,15 @@ function makeTypeCard(group, type) {
   const a = document.createElement("a");
   a.className = "type-card";
   a.href = `product-list.html?group=${encodeURIComponent(group)}&type=${encodeURIComponent(type)}`;
+
+  // ใช้ชื่อประเภทสินค้าเป็นชื่อไฟล์รูปตรงๆ
+  const imgSrc = `assets/categories/${type}.jpg`;
+
   a.innerHTML = `
     <div class="type-card__icon-area">
-      <div class="type-card__placeholder-img">[${type}]</div>
+      <img src="${imgSrc}" alt="${type}"
+           onerror="this.parentElement.innerHTML='<div class=\\'type-card__placeholder-img\\'>[${type}]</div>'"
+      />
     </div>
     <span class="type-card__label">${type}</span>
   `;
