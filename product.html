@@ -215,6 +215,39 @@
   </main>
   <!-- /MAIN -->
 
+  <!-- ==================== LIGHTBOX MODAL ==================== -->
+  <div class="lightbox hidden" id="js-lightbox">
+ 
+    <!-- ปุ่มปิด มุมบนขวา -->
+    <button class="lightbox__close" id="js-lbClose" title="ปิด">&#x2715;</button>
+ 
+    <!-- พื้นที่แสดงรูป / iframe 3D -->
+    <div class="lightbox__content">
+ 
+      <!-- รูปภาพ -->
+      <div class="lightbox__img-wrap" id="js-lbImgWrap">
+        <img class="lightbox__img" id="js-lbImg" src="" alt="" />
+      </div>
+ 
+      <!-- โมเดล 3D (iframe) -->
+      <div class="lightbox__model-wrap hidden" id="js-lbModelWrap"></div>
+ 
+    </div>
+ 
+    <!-- ปุ่มซ้าย / ขวา -->
+    <button class="lightbox__nav lightbox__nav--prev" id="js-lbPrev" title="ก่อนหน้า">&#8249;</button>
+    <button class="lightbox__nav lightbox__nav--next" id="js-lbNext" title="ถัดไป">&#8250;</button>
+ 
+    <!-- ปุ่มด้านล่าง: zoom in / zoom out / reset -->
+    <div class="lightbox__controls" id="js-lbControls">
+      <button class="lightbox__ctrl-btn" id="js-lbZoomIn"  title="ขยาย">&#43;</button>
+      <button class="lightbox__ctrl-btn" id="js-lbZoomOut" title="ย่อ">&#8722;</button>
+      <button class="lightbox__ctrl-btn" id="js-lbReset"   title="รีเซต">Reset</button>
+    </div>
+ 
+  </div>
+  <!-- /LIGHTBOX -->
+  
   <!-- ==================== FOOTER ==================== -->
   <footer class="site-footer">
     <p class="site-footer__copy">&copy; 2026 Dhanabadee. All rights reserved.</p>
