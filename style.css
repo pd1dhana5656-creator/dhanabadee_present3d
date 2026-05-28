@@ -853,20 +853,19 @@ ul, ol {
   transform: translateY(-50%);
   background: none;
   border: none;
+  outline: none;
   color: #fff;
   font-size: 3rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s;
   z-index: 10;
   line-height: 1;
 }
 .lightbox__nav--prev { left: 16px; }
 .lightbox__nav--next { right: 16px; }
 .lightbox__nav:disabled {
-  background: none;
   opacity: 0.2;
   cursor: default;
   pointer-events: none;
