@@ -184,7 +184,8 @@ function renderFinishing(currentRow, finishingCode, variants) {
     a.title = label;
 
     // ใช้ parseImageUrls เพื่อดึงรูปแรกของ variant นั้น
-    const imgUrl = parseImageUrls(v["รูปภาพ"])[0] || "";
+    const imgs = parseImageUrls(v["รูปภาพ"]);
+    const imgUrl = imgs[imgs.length - 1] || "";
     a.innerHTML = imgUrl
       ? `<img src="${imgUrl}" alt="${label}" /><span class="swatch__code">${label}</span>`
       : `<div class="swatch__no-img"></div><span class="swatch__code">${label}</span>`;
