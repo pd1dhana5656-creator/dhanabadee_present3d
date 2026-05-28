@@ -855,9 +855,6 @@ ul, ol {
   border: none;
   color: #fff;
   font-size: 3rem;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
