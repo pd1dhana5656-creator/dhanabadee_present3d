@@ -773,3 +773,130 @@ ul, ol {
   border-color: #aaa;
   background: #fff;
 }
+
+/* ── LIGHTBOX ──────────────────────────────────────────────── */
+ 
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+/* ปุ่มปิด */
+.lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 10;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.lightbox__close:hover { opacity: 1; }
+ 
+/* พื้นที่ภาพ */
+.lightbox__content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+ 
+.lightbox__img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+ 
+.lightbox__img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  cursor: grab;
+  transform-origin: center center;
+  transition: transform 0.1s ease;
+  user-select: none;
+}
+ 
+.lightbox__img.dragging { cursor: grabbing; }
+ 
+/* iframe 3D */
+.lightbox__model-wrap {
+  width: 90vw;
+  height: 85vh;
+}
+.lightbox__model-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+}
+ 
+/* ปุ่มซ้าย / ขวา */
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  font-size: 3rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  z-index: 10;
+  line-height: 1;
+}
+.lightbox__nav:hover { background: rgba(255,255,255,0.25); }
+.lightbox__nav--prev { left: 16px; }
+.lightbox__nav--next { right: 16px; }
+.lightbox__nav:disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}
+ 
+/* ปุ่มล่าง: zoom controls */
+.lightbox__controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+ 
+.lightbox__ctrl-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lightbox__ctrl-btn:hover { background: rgba(255,255,255,0.28); }
+ 
+/* ซ่อน zoom controls เมื่อแสดง 3D */
+.lightbox__controls.hidden { display: none; }
